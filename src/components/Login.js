@@ -1,4 +1,3 @@
-//declaração de componentes a serem utilizados
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Card, Text, TextInput } from "react-native-paper";
 import React, { useState } from "react";
@@ -9,34 +8,46 @@ export default function Login({ changeStatus }) {
   const [type, setType] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  }
 
   function handleLogin() {
+    if (!validateEmail(email)) {
+      setEmailError("Email inválido");
+      return;
+    }
+
     if (type === 'login') {
       // Aqui fazemos o login
-      const user = firebase.auth().signInWithEmailAndPassword(email, password)
+      firebase.auth().signInWithEmailAndPassword(email, password)
         .then((user) => {
-          changeStatus(user.user.uid)
+          changeStatus(user.user.uid);
         })
         .catch((err) => {
           console.log(err);
-          alert('Email ou senha não cadastrados!');
-          return;
-        })
+          if (err.code === 'auth/user-not-found') {
+            setEmailError("Email não cadastrado");
+          } else {
+            alert('Email ou senha incorretos!');
+          }
+        });
     } else {
       // Aqui cadastramos o usuario
-      const user = firebase.auth().createUserWithEmailAndPassword(email, password)
+      firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((user) => {
-          changeStatus(user.user.uid)
+          changeStatus(user.user.uid);
         })
         .catch((err) => {
           console.log(err);
           alert('Erro ao Cadastrar!');
-          return;
-        })
+        });
     }
   }
 
-  //tipo recebe padrão logado
   return (
     <View style={styles.container}>
       <Image style={styles.logo} source={DevAutomateIcon} />
@@ -49,8 +60,13 @@ export default function Login({ changeStatus }) {
             mode="outlined"
             label="E-mail"
             value={email}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={(text) => {
+              setEmail(text);
+              setEmailError("");
+            }}
+            error={!!emailError}
           />
+          {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
           <TextInput
             style={styles.label}
             mode="outlined"
@@ -77,7 +93,7 @@ export default function Login({ changeStatus }) {
         onPress={() =>
           setType((type) => (type === 'login' ? 'cadastrar' : 'login'))
         }>
-        <Text style={{ textAlign: 'center' }}>
+        <Text style={styles.switchText}>
           {type === 'login' ? 'Criar uma conta' : 'Já possuo uma conta'}
         </Text>
       </TouchableOpacity>
@@ -101,8 +117,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "red",
   },
+  colorButton: {
+    width: '50%',
+    alignSelf: 'center',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
   loginText: {
     color: "#FFF",
     fontSize: 24,
+    textAlign: 'center',
+  },
+  switchText: {
+    textAlign: 'center',
+    marginTop: 15,
+    color: '#4682B4',
+    textDecorationLine: 'underline',
+    fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
   },
 });
