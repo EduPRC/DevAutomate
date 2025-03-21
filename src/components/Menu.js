@@ -52,38 +52,38 @@ export default function Menu() {
                                 iconName = 'home';
                                 break;
                             case 'Listar':
-                                iconName = 'list-alt'; 
+                                iconName = 'list'; 
                                 break;
                             case 'Projetos':
-                                iconName = 'file-text';
+                                iconName = 'lightbulb-o';
                                 break;
                             case 'Tutoriais':
-                                iconName = 'flask';
+                                iconName = 'book';
                                 break;
                             case 'Ler API':
                                 iconName = 'android';
                                 break;
                             default:
-                                iconName = 'bomb';
+                                iconName = '';
                                 break;
                         }
                         return <Icon name={iconName} size={size} color={color} />;
                     },
-                })}
-                tabBarOptions={{
-                    activeTintColor: '#006400',
-                    inactiveTintColor: '#006400',
+                    tabBarActiveTintColor: '#0285a6',
+                    tabBarInactiveTintColor: '#9ea2a3',
+                    tabBarStyle: { height: 65 }, 
+                    tabBarLabelStyle: { fontSize: 12 },
                     showLabel: true,
-                }}
+                })}
 >
 <Tab.Screen name="Home" component={HomeScreen} />
 <Tab.Screen name="Listar" component={ListScreen} />
 <Tab.Screen
-                    name="Tarefas"
+                    name="Projetos"
                     component={PostScreen2}
                 />
 <Tab.Screen
-                    name="Produtos"
+                    name="Tutoriais"
                     component={PostScreen}
                 />
 <Tab.Screen name="Ler API" component={APIScreen} />
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     iconTabRound: {
         width: 60,
