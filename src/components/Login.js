@@ -9,15 +9,60 @@ export default function Login({ changeStatus }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   function validateEmail(email) {
+    if (!email.includes('@')) {
+      setEmailError("Falta @ no email");
+      return false;
+    }
+    if (!email.includes('.com')) {
+      setEmailError("Falta .com no email");
+      return false;
+    }
+    if (email !== email.toLowerCase()) {
+      setEmailError("Email deve conter apenas letras minúsculas");
+      return false;
+    }
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
   }
 
+  function validatePassword(password) {
+    const specialChars = /[!@#$%^&*(),.?":{}|<>]/;
+    const upperCase = /[A-Z]/;
+    const lowerCase = /[a-z]/;
+    const numbers = /[0-9]/;
+
+    if (!specialChars.test(password)) {
+      setPasswordError("A senha deve conter pelo menos um caractere especial");
+      return false;
+    }
+    if (!upperCase.test(password)) {
+      setPasswordError("A senha deve conter pelo menos uma letra maiúscula");
+      return false;
+    }
+    if (!lowerCase.test(password)) {
+      setPasswordError("A senha deve conter pelo menos uma letra minúscula");
+      return false;
+    }
+    if (!numbers.test(password)) {
+      setPasswordError("A senha deve conter pelo menos um número");
+      return false;
+    }
+    if (password.length < 6) {
+      setPasswordError("A senha deve ter pelo menos 6 caracteres");
+      return false;
+    }
+    return true;
+  }
+
   function handleLogin() {
     if (!validateEmail(email)) {
-      setEmailError("Email inválido");
+      return;
+    }
+
+    if (!validatePassword(password)) {
       return;
     }
 
@@ -74,8 +119,12 @@ export default function Login({ changeStatus }) {
             secureTextEntry
             maxLength={30}
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={(text) => {
+              setPassword(text);
+              setPasswordError("");
+            }}
           />
+          {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
         </Card.Content>
       </Card>
       <TouchableOpacity
