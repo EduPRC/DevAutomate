@@ -1,8 +1,21 @@
 import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ProjetoForm from './Projects';
+
+function ProjetoScreen() {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar backgroundColor="#4682B4" />
+        <View style={styles.container}>
+          <ProjetoForm />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
 function HomeScreen() {
     return (
 <View style={styles.container}>
@@ -80,7 +93,7 @@ export default function Menu() {
 <Tab.Screen name="Listar" component={ListScreen} />
 <Tab.Screen
                     name="Projetos"
-                    component={PostScreen2}
+                    component={ProjetoScreen}
                 />
 <Tab.Screen
                     name="Tutoriais"
@@ -110,5 +123,20 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 5,
+    },
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+      },
+      container: {
+        flex: 1,
+        padding: 16,
+      },
+      headerText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 16,
+        color: '#4682B4',
     }
 });
