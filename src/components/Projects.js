@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, TouchableOpacity, Platform, ScrollView, Keyboard, ActivityIndicator, FlatList } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity, Platform, ScrollView, Keyboard, ActivityIndicator, FlatList, Alert } from "react-native";
 import { Card, Text, TextInput } from "react-native-paper";
 import React, { useState, useEffect } from "react";
 import { MaterialIcons, FontAwesome5, AntDesign, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
@@ -58,6 +58,7 @@ export default function ProjetoForm() {
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState([]);
   const [isListMode, setIsListMode] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
 
   // Tipos de projeto disponíveis
   const tiposProjeto = [
@@ -72,21 +73,8 @@ export default function ProjetoForm() {
   useEffect(() => {
     if (route.params?.projeto) {
       const projeto = route.params.projeto;
-      setKey(projeto.key);
-      setNomeProjeto(projeto.nome);
-      setDescricaoProjeto(projeto.descricao);
-      setTipoProjeto(projeto.tipo);
-      
-      // Converte strings de data para objetos Date
-      if (projeto.dataInicio) {
-        const [diaInicio, mesInicio, anoInicio] = projeto.dataInicio.split('/');
-        setDataInicio(new Date(anoInicio, mesInicio - 1, diaInicio));
-      }
-      
-      if (projeto.dataFim) {
-        const [diaFim, mesFim, anoFim] = projeto.dataFim.split('/');
-        setDataFim(new Date(anoFim, mesFim - 1, diaFim));
-      }
+      loadProjectData(projeto);
+      setEditingProject(projeto);
     }
   }, [route.params?.projeto]);
 
@@ -94,6 +82,23 @@ export default function ProjetoForm() {
   useEffect(() => {
     loadProjects();
   }, []);
+
+  const loadProjectData = (projeto) => {
+    setKey(projeto.key);
+    setNomeProjeto(projeto.nome);
+    setDescricaoProjeto(projeto.descricao);
+    setTipoProjeto(projeto.tipo);
+    
+    if (projeto.dataInicio) {
+      const [diaInicio, mesInicio, anoInicio] = projeto.dataInicio.split('/');
+      setDataInicio(new Date(anoInicio, mesInicio - 1, diaInicio));
+    }
+    
+    if (projeto.dataFim) {
+      const [diaFim, mesFim, anoFim] = projeto.dataFim.split('/');
+      setDataFim(new Date(anoFim, mesFim - 1, diaFim));
+    }
+  };
 
   const loadProjects = async () => {
     setLoading(true);
@@ -205,6 +210,7 @@ export default function ProjetoForm() {
     setDataFim(null);
     setTipoProjeto("");
     setKey("");
+    setEditingProject(null);
   }
 
   // Selecionar tipo de projeto
@@ -227,8 +233,55 @@ export default function ProjetoForm() {
 
   // Editar projeto
   const editProject = (project) => {
-    navigation.navigate('Projetos', { projeto: project });
+    loadProjectData(project);
+    setEditingProject(project);
     setIsListMode(false);
+  };
+
+  // Confirmar cancelamento
+  const confirmCancel = () => {
+    if (!hasChanges()) {
+      setIsListMode(true);
+      return;
+    }
+
+    Alert.alert(
+      'Cancelar Edição',
+      'Tem certeza que deseja descartar as alterações?',
+      [
+        { text: 'Não', style: 'cancel' },
+        { 
+          text: 'Sim', 
+          onPress: () => {
+            if (editingProject) {
+              loadProjectData(editingProject);
+            } else {
+              clearFields();
+            }
+            setIsListMode(true);
+          }
+        }
+      ]
+    );
+  };
+
+  // Verifica se houve alterações no formulário
+  const hasChanges = () => {
+    if (!editingProject && (nomeProjeto || descricaoProjeto || tipoProjeto || dataInicio || dataFim)) {
+      return true;
+    }
+
+    if (editingProject) {
+      return (
+        nomeProjeto !== editingProject.nome ||
+        descricaoProjeto !== editingProject.descricao ||
+        tipoProjeto !== editingProject.tipo ||
+        formatDate(dataInicio) !== editingProject.dataInicio ||
+        formatDate(dataFim) !== editingProject.dataFim
+      );
+    }
+
+    return false;
   };
 
   // Renderizar item da lista
@@ -302,7 +355,7 @@ export default function ProjetoForm() {
           </Text>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => setIsListMode(true)}>
+            onPress={confirmCancel}>
             <Feather name="arrow-left" size={24} color="#4682B4" />
           </TouchableOpacity>
         </View>
@@ -411,11 +464,8 @@ export default function ProjetoForm() {
         {key && (
           <TouchableOpacity
             style={[styles.submitButton, { backgroundColor: '#ff4444', marginTop: 10 }]}
-            onPress={() => {
-              clearFields();
-              setIsListMode(true);
-            }}>
-            <Text style={styles.submitText}>Cancelar Edição</Text>
+            onPress={confirmCancel}>
+            <Text style={styles.submitText}>Cancelar</Text>
           </TouchableOpacity>
         )}
       </View>
