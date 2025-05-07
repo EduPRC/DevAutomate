@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ProjetoForm from './Projects';
+import TutorialForm from './Tutorials';
 
 function ProjetoScreen() {
     return (
@@ -31,20 +32,7 @@ function ListScreen() {
 </View>
     );
 }
-function PostScreen() {
-    return (
-<View style={styles.container}>
-<Text></Text>
-</View>
-    );
-}
-function PostScreen2() {
-    return (
-<View style={styles.container}>
-<Text></Text>
-</View>
-    );
-}
+
 function APIScreen() {
     return (
 <View style={styles.container}>
@@ -97,7 +85,7 @@ export default function Menu() {
                 />
 <Tab.Screen
                     name="Tutoriais"
-                    component={PostScreen}
+                    component={TutorialForm}
                 />
 <Tab.Screen name="Ler API" component={APIScreen} />
 </Tab.Navigator>
