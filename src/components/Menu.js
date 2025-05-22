@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ProjetoForm from './Projects';
 import TutorialForm from './Tutorials';
+import CrudComments from './crudapi';
 
 function ProjetoScreen() {
     return (
@@ -61,7 +62,7 @@ export default function Menu() {
                             case 'Tutoriais':
                                 iconName = 'book';
                                 break;
-                            case 'Ler API':
+                            case 'CRUD API':
                                 iconName = 'android';
                                 break;
                             default:
@@ -87,7 +88,11 @@ export default function Menu() {
                     name="Tutoriais"
                     component={TutorialForm}
                 />
-<Tab.Screen name="Ler API" component={APIScreen} />
+<Tab.Screen 
+                    name="CRUD API" 
+                    component={CrudComments} 
+                />
+
 </Tab.Navigator>
 </NavigationContainer>
     );
